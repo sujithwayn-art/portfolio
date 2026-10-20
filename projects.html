@@ -7,14 +7,40 @@
 <li><a href="index.html" >Home</a></li><li><a href="projects.html" aria-current="page">Projects</a></li><li><a href="contact.html" >Contact</a></li></ul></nav></header>
 <main class="page">
   <h1>PROJECTS</h1>
-  <p class="lead">Selected VFX work. Click a project to watch.</p>
-  <div class="grid">
-    <!-- Copy a block per project. Set data-video to an embed link, and add thumbnail in assets/ -->
-    <button class="card" data-video=""><div class="thumb"><img src="assets/project1.jpg" alt="" onerror="this.remove()"></div><h3>Project One</h3><p>Compositing &bull; Nuke</p></button>
-    <button class="card" data-video=""><div class="thumb"><img src="assets/project2.jpg" alt="" onerror="this.remove()"></div><h3>Project Two</h3><p>FX &bull; Houdini</p></button>
-    <button class="card" data-video=""><div class="thumb"><img src="assets/project3.jpg" alt="" onerror="this.remove()"></div><h3>Project Three</h3><p>3D &bull; Blender</p></button>
-  </div>
+  <p class="lead">Films I have worked on. Click a poster to open it on IMDb.</p>
+  <div class="posters" id="posters"></div>
 </main>
 <div class="modal" id="modal"><div class="box"><button>CLOSE</button></div></div>
 <footer><div class="foot"><span>&copy; 2026 Sujith PS. All rights reserved.</span><a href="https://www.linkedin.com/in/YOUR-LINKEDIN" target="_blank" rel="noopener">LinkedIn &#8599;</a></div></footer>
+<script>
+// 1) Get a free key at https://www.omdbapi.com/apikey.aspx and paste it here
+const OMDB_KEY = "7fabcdac";
+// 2) List your films: IMDb ID (from the imdb.com/title/ttXXXXXXX/ link) + your role.
+//    Optional: poster:"https://..." to use your own image link instead.
+const FILMS = [
+  { id: "tt33500164", role: "VFX Artist" },
+];
+
+const grid = document.getElementById("posters");
+FILMS.forEach(async f => {
+  const a = document.createElement("a");
+  a.className = "poster";
+  a.href = `https://www.imdb.com/title/${f.id}/`;
+  a.target = "_blank"; a.rel = "noopener";
+  a.innerHTML = '<div class="art"></div><h3></h3><p></p>';
+  const art = a.querySelector(".art"), h3 = a.querySelector("h3"), p = a.querySelector("p");
+  h3.textContent = f.title || f.id; p.textContent = f.role || "";
+  grid.appendChild(a);
+  let title = f.title, year = "", poster = f.poster;
+  if (OMDB_KEY && (!poster || !title)) {
+    try {
+      const d = await (await fetch(`https://www.omdbapi.com/?i=${f.id}&apikey=${OMDB_KEY}`)).json();
+      if (d.Response === "True") { title = title || d.Title; year = d.Year; poster = poster || (d.Poster !== "N/A" ? d.Poster : ""); }
+    } catch (e) {}
+  }
+  h3.textContent = title || f.id;
+  p.textContent = [f.role, year].filter(Boolean).join(" \u2022 ");
+  if (poster) { const img = new Image(); img.alt = "Poster: " + (title || ""); img.referrerPolicy = "no-referrer"; img.src = poster; img.onerror = () => img.remove(); art.appendChild(img); }
+});
+</script>
 <script src="js/main.js"></script></body></html>
