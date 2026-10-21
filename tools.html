@@ -1,0 +1,76 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<title>Tools — Sujith PS</title>
+<meta name="description" content="Free custom Nuke gizmos by Sujith PS. Request a download link by email.">
+</head><body>
+<header class="nav"><a class="logo" href="index.html">SUJITH PS</a><nav><ul>
+<li><a href="index.html">Home</a></li><li><a href="projects.html">Projects</a></li><li><a href="tools.html" aria-current="page">Tools</a></li><li><a href="contact.html">Contact</a></li></ul></nav></header>
+<main class="page">
+  <h1>TOOLS</h1>
+  <p class="lead">Custom Nuke gizmos, free to use. Request one and the download link is sent to your email.</p>
+
+  <div class="tools">
+    <!-- One <article> per gizmo. data-gizmo must match a name in the Apps Script LINKS list -->
+    <article class="tool">
+      <div class="preview"><img src="assets/gizmo1.jpg" alt="" onerror="this.remove()"></div>
+      <div class="body">
+        <h3>Gizmo Name 1</h3>
+        <p>One line about what this tool does.</p>
+        <div class="meta"><span class="tag">Nuke 13+</span><span class="tag">Compositing</span></div>
+        <button class="btn" data-gizmo="Gizmo Name 1">Request download</button>
+      </div>
+    </article>
+    <article class="tool">
+      <div class="preview"><img src="assets/gizmo2.jpg" alt="" onerror="this.remove()"></div>
+      <div class="body">
+        <h3>Gizmo Name 2</h3>
+        <p>One line about what this tool does.</p>
+        <div class="meta"><span class="tag">Nuke 13+</span><span class="tag">Utility</span></div>
+        <button class="btn" data-gizmo="Gizmo Name 2">Request download</button>
+      </div>
+    </article>
+  </div>
+
+  <section class="request" id="request">
+    <h2>Request a gizmo</h2>
+    <form id="reqForm">
+      <label>Gizmo
+        <select name="gizmo" id="gizmo" required>
+          <option>Gizmo Name 1</option>
+          <option>Gizmo Name 2</option>
+        </select>
+      </label>
+      <label>Name <input name="name" type="text" required autocomplete="name"></label>
+      <label>Email <input name="email" type="email" required autocomplete="email"></label>
+      <label>Studio / use (optional) <input name="purpose" type="text"></label>
+      <input name="website" type="text" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
+      <button class="btn solid" type="submit">Send me the link</button>
+      <p class="status" id="status" role="status"></p>
+    </form>
+  </section>
+</main>
+<footer><div class="foot"><span>&copy; 2026 Sujith PS. All rights reserved.</span><a href="https://www.artstation.com/sujithps" target="_blank" rel="noopener">ArtStation &#8599;</a></div></footer>
+<script>
+// Paste your Google Apps Script Web App URL here
+const ENDPOINT = "";
+
+const sel = document.getElementById('gizmo'), form = document.getElementById('reqForm'), status = document.getElementById('status');
+document.querySelectorAll('button[data-gizmo]').forEach(b => b.addEventListener('click', () => {
+  sel.value = b.dataset.gizmo;
+  document.getElementById('request').scrollIntoView({ behavior: 'smooth' });
+}));
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  if (form.website.value) return;               // spam trap
+  if (!ENDPOINT) { status.textContent = 'Setup not finished: add ENDPOINT in tools.html.'; return; }
+  status.textContent = 'Sending…';
+  try {
+    await fetch(ENDPOINT, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(new FormData(form)) });
+    status.textContent = 'Done. Check your email for the download link (and spam folder).';
+    form.reset();
+  } catch (err) { status.textContent = 'Something went wrong. Please try again.'; }
+});
+</script>
+</body></html>
